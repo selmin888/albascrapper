@@ -20,7 +20,7 @@ link_lists = []
 for job in all_jobs:
     job_info = job.find("a", {"class": "goodsBox-info"})
     company = job_info.find("span", {"class": "company"}).text
-    company_lists.append(company)
+    company_lists.append(company.replace("/", " "))
 
     link = job_info.attrs['href']
     link_lists.append(link)
@@ -47,13 +47,13 @@ def get_last_page(link):
 
 
 for company, link in zip(company_lists, link_lists):
-    places = []
-    titles = []
-    times = []
-    pay_types = []
-    pay_amounts = []
-    dates = []
     if get_last_page(link) != 0:
+        places = []
+        titles = []
+        times = []
+        pay_types = []
+        pay_amounts = []
+        dates = []
         for i in range(0, get_last_page(link)):
             link = link+f"?page={i+1}"
             link_request = requests.get(link)
@@ -108,10 +108,11 @@ for company, link in zip(company_lists, link_lists):
                 date = date_list.get_text()
                 dates.append(date)
 
-    file = open(company, mode="w")
-    writer = csv.writer(file)
-    writer.writerow(["place", "title", "time",
-                    "pay_type", "pay_amount", "date"])
-    for place, title, time, pay_type, pay_amount, date in zip(places, titles, times, pay_types, pay_amounts, dates):
-        writer.writerow([place, title, time, pay_type, pay_amount, date])
-# ?page=페이지숫자
+        file = open(company, mode="w")
+        writer = csv.writer(file)
+        writer.writerow(["place", "title", "time",
+                        "pay_type", "pay_amount", "date"])
+        for place, title, time, pay_type, pay_amount, date in zip(places, titles, times, pay_types, pay_amounts, dates):
+            writer.writerow([place, title, time, pay_type, pay_amount, date])
+    else:
+        continue

@@ -45,7 +45,6 @@ def get_last_page(link):
     last_page = jobs_numbers/50
     return math.ceil(last_page)
 
-
 for company, link in zip(company_lists, link_lists):
     if get_last_page(link) != 0:
         places = []
@@ -83,7 +82,7 @@ for company, link in zip(company_lists, link_lists):
                 else:
                     time = time_list.find(
                         "span", {"class": "consult"}).get_text()
-                    times.append(time)
+                times.append(time)
 
             pay_type_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
                 "tbody").find_all("td", {"class": "pay"})
@@ -108,7 +107,7 @@ for company, link in zip(company_lists, link_lists):
                 date = date_list.get_text()
                 dates.append(date)
 
-        file = open(company, mode="w")
+        file = open(company, mode="w", encoding='utf-8-sig')
         writer = csv.writer(file)
         writer.writerow(["place", "title", "time",
                         "pay_type", "pay_amount", "date"])
@@ -116,3 +115,91 @@ for company, link in zip(company_lists, link_lists):
             writer.writerow([place, title, time, pay_type, pay_amount, date])
     else:
         continue
+
+
+
+'''
+link = "http://baeminmarket.alba.co.kr/job/brand/"
+company = "(주)우아한청년들"
+places = []
+titles = []
+times = []
+pay_types = []
+pay_amounts = []
+dates = []
+if get_last_page(link) != 0:
+    
+    places = []
+    titles = []
+    times = []
+    pay_types = []
+    pay_amounts = []
+    dates = []
+    
+    for i in range(0, get_last_page(link)):
+        link = link+f"?page={i+1}"
+        link_request = requests.get(link)
+        link_soup = BeautifulSoup(link_request.text, "html.parser")
+
+        places_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
+            "tbody").find_all("td", {"class": "local first"})
+        #places = []
+        for places_list in places_lists:
+            place = places_list.get_text()
+            places.append(place.replace('\xa0', ''))
+
+        title_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
+            "tbody").find_all("td", {"class": "title"})
+        #titles = []
+        for title_list in title_lists:
+            title = title_list.find(
+                "span", {"class": "company"}).get_text()
+            titles.append(title)
+
+        time_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
+            "tbody").find_all("td", {"class": "data"})
+        #times = []
+        for time_list in time_lists:
+            if time_list.find("span", {"class": "time"}):
+                time = time_list.find("span", {"class": "time"}).get_text()
+            else:
+                time = time_list.find(
+                    "span", {"class": "consult"}).get_text()
+            times.append(time)
+
+        pay_type_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
+            "tbody").find_all("td", {"class": "pay"})
+        #pay_types = []
+        for pay_type_list in pay_type_lists:
+            pay_type = pay_type_list.find(
+                "span", {"class": "payIcon"}).get_text()
+            pay_types.append(pay_type)
+
+        pay_amount_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
+            "tbody").find_all("td", {"class": "pay"})
+        #pay_amounts = []
+        for pay_amount_list in pay_amount_lists:
+            pay_amount = pay_amount_list.find(
+                "span", {"class": "number"}).get_text()
+            pay_amounts.append(pay_amount)
+
+        date_lists = link_soup.find("div", {"id": "NormalInfo"}).find(
+            "tbody").find_all("td", {"class": "regDate last"})
+        #dates = []
+        for date_list in date_lists:
+            date = date_list.get_text()
+            dates.append(date)
+else:
+    print("no")
+#print(places, titles, times, pay_types, pay_amounts, dates)
+#print(len(places), len(titles), len(times), len(pay_types), len(pay_amounts), len(dates))
+#job_zip = zip(places, titles, times, pay_types, pay_amounts, dates)
+#result_list = list(job_zip)
+#print(result_list)
+
+file = open(company, mode="w", encoding='utf-8-sig')
+writer = csv.writer(file)
+writer.writerow(["place", "title", "time", "pay_type", "pay_amount", "date"])
+for place, title, time, pay_type, pay_amount, date in zip(places, titles, times, pay_types, pay_amounts, dates):
+    writer.writerow([place, title, time, pay_type, pay_amount, date])
+'''
